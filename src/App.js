@@ -21,11 +21,13 @@ function ProtectedRoute({ children, roles }) {
   return children;
 }
 
+const API_BASE_URL = process.env.REACT_APP_API_URL || '';
+
 function AppRoutes() {
   const [message, setMessage] = useState("");
   
   useEffect(() => {
-    fetch("/api/health")
+    fetch(`${API_BASE_URL}/api/health`)
       .then(res => res.json())
       .then(() => setMessage("Service healthy"))
       .catch(() => setMessage(""));

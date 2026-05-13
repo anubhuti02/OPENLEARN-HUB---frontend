@@ -2,12 +2,14 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { useAuth } from "../auth/AuthContext";
 
+const API_BASE_URL = process.env.REACT_APP_API_URL || '';
+
 export default function CourseCatalog() {
   const { token } = useAuth();
   const [courses, setCourses] = useState([]);
 
   useEffect(() => {
-    fetch('/api/data/courses', {
+    fetch(`${API_BASE_URL}/api/data/courses`, {
       headers: { 'Authorization': `Bearer ${token}` }
     })
     .then(res => res.json())

@@ -3,6 +3,8 @@ import DashboardLayout from "../components/DashboardLayout";
 import { Line } from 'react-chartjs-2';
 import { useAuth } from "../auth/AuthContext";
 
+const API_BASE_URL = process.env.REACT_APP_API_URL || '';
+
 export default function DashboardAdmin() {
   const { token } = useAuth();
   const [data, setData] = useState(null);
@@ -10,7 +12,7 @@ export default function DashboardAdmin() {
 
   useEffect(() => {
     if (token) {
-      fetch('/api/data/admin', {
+      fetch(`${API_BASE_URL}/api/data/admin`, {
         headers: { 'Authorization': `Bearer ${token}` }
       })
       .then(res => res.json())
@@ -21,7 +23,7 @@ export default function DashboardAdmin() {
 
   useEffect(() => {
     if (token) {
-      fetch('/api/data/courses', {
+      fetch(`${API_BASE_URL}/api/data/courses`, {
         headers: { 'Authorization': `Bearer ${token}` }
       })
       .then(res => res.json())

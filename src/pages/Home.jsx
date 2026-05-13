@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 
+const API_BASE_URL = process.env.REACT_APP_API_URL || '';
+
 export default function Home({ backendMessage }) {
   const [courses, setCourses] = useState([]);
   const [stats, setStats] = useState({ totalStudents: 0, totalCourses: 0, totalQuizzes: 0 });
@@ -10,7 +12,7 @@ export default function Home({ backendMessage }) {
   const [errorMessage, setErrorMessage] = useState('');
 
   useEffect(() => {
-    fetch('/api/data/courses')
+    fetch(`${API_BASE_URL}/api/data/courses`)
       .then(res => res.json())
       .then(data => {
         if (data && Array.isArray(data)) {
@@ -19,7 +21,7 @@ export default function Home({ backendMessage }) {
       })
       .catch(err => console.error(err));
 
-    fetch('/api/data/stats')
+    fetch(`${API_BASE_URL}/api/data/stats`)
       .then(res => res.json())
       .then(data => {
         if (data) {
@@ -55,7 +57,7 @@ export default function Home({ backendMessage }) {
     setErrorMessage('');
 
     try {
-      const res = await fetch('/api/contact', {
+      const res = await fetch(`${API_BASE_URL}/api/contact`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(formData)

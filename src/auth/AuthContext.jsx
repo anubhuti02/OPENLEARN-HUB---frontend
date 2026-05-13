@@ -21,9 +21,11 @@ export function AuthProvider({ children }) {
     }
   }, []);
 
+  const API_BASE_URL = process.env.REACT_APP_API_URL || '';
+
   const login = async (email, password) => {
     try {
-      const res = await fetch('/api/auth/login', {
+      const res = await fetch(`${API_BASE_URL}/api/auth/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password })
@@ -44,7 +46,7 @@ export function AuthProvider({ children }) {
   const googleLogin = async (credential, role = null) => {
     try {
       const body = role ? { credential, role } : { credential };
-      const res = await fetch('/api/auth/google', {
+      const res = await fetch(`${API_BASE_URL}/api/auth/google`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(body)
@@ -71,7 +73,7 @@ export function AuthProvider({ children }) {
 
   const register = async (name, email, password, role) => {
     try {
-      const res = await fetch('/api/auth/register', {
+      const res = await fetch(`${API_BASE_URL}/api/auth/register`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ name, email, password, role })

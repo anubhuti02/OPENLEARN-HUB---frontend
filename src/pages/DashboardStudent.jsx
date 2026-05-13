@@ -30,7 +30,7 @@ ChartJS.register(
   Filler
 );
 
-const BACKEND_URL = "http://localhost:5001";
+const BACKEND_URL = process.env.REACT_APP_API_URL || "";
 
 export default function DashboardStudent() {
   const { token, user } = useAuth();
