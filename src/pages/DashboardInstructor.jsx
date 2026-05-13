@@ -816,6 +816,58 @@ export default function DashboardInstructor() {
           )}
         </div>
 
+        {/* Quizzes Section */}
+        <div className="mb-12">
+          <h3 className="text-3xl font-black mb-8 flex items-center gap-2"><span>📝</span> Quizzes</h3>
+          {quizzes.length > 0 ? (
+            <div className="overflow-x-auto">
+              <table className="w-full text-left bg-[#1e293b] rounded-3xl overflow-hidden shadow-xl border border-[#334155]">
+                <thead>
+                  <tr className="border-b-2 border-[#334155]">
+                    <th className="py-4 px-6 font-bold text-sm uppercase tracking-wider text-gray-400">Title</th>
+                    <th className="py-4 px-6 font-bold text-sm uppercase tracking-wider text-gray-400">Course</th>
+                    <th className="py-4 px-6 font-bold text-sm uppercase tracking-wider text-gray-400">Source</th>
+                    <th className="py-4 px-6 font-bold text-sm uppercase tracking-wider text-gray-400">Duration</th>
+                    <th className="py-4 px-6 font-bold text-sm uppercase tracking-wider text-gray-400">Questions</th>
+                    <th className="py-4 px-6 font-bold text-sm uppercase tracking-wider text-gray-400">Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {quizzes.map(q => (
+                    <tr key={q._id} className="border-b border-[#334155] hover:bg-[#0f172a]/50 transition-colors">
+                      <td className="py-4 px-6 font-medium">{q.title}</td>
+                      <td className="py-4 px-6 text-gray-400">{q.course?.title || 'Unknown Course'}</td>
+                      <td className="py-4 px-6 text-indigo-400 font-bold">{q.source || 'Manual'}</td>
+                      <td className="py-4 px-6 text-gray-400">{q.duration} min</td>
+                      <td className="py-4 px-6 text-gray-400">{q.questions?.length || 0}</td>
+                      <td className="py-4 px-6">
+                        <div className="flex gap-2 flex-wrap">
+                          <button 
+                            onClick={() => openQuizUpdate(q)}
+                            className="px-3 py-1.5 rounded-lg bg-blue-600 text-white text-sm font-bold hover:bg-blue-700 transition-colors"
+                          >
+                            Edit
+                          </button>
+                          <button 
+                            onClick={() => deleteQuiz(q._id)}
+                            className="px-3 py-1.5 rounded-lg bg-red-600 text-white text-sm font-bold hover:bg-red-700 transition-colors"
+                          >
+                            Delete
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          ) : (
+            <div className="p-12 text-center bg-[#1e293b]/30 rounded-3xl border-2 border-dashed border-[#334155]">
+              <p className="text-gray-500 italic">No quizzes created yet. Click "Add Quiz" to get started!</p>
+            </div>
+          )}
+        </div>
+
         {/* Course Grid */}
         <h3 className="text-3xl font-black mb-8 flex items-center gap-2"><span>📚</span> Active Courses</h3>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
@@ -1168,6 +1220,176 @@ export default function DashboardInstructor() {
                     Submit Grade
                   </button>
                   <button type="button" onClick={() => setShowGradeModal(false)} className="px-8 py-4 rounded-xl bg-[#0f172a] text-gray-400 font-bold hover:bg-red-900/20 hover:text-red-500 transition-all">
+                    Cancel
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        )}
+
+        {/* Quiz Modal */}
+        {showQuizModal && (
+          <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[1001] grid place-items-center p-6">
+            <div className="bg-[#1e293b] rounded-[2rem] p-8 w-full max-w-4xl max-h-[90vh] overflow-y-auto shadow-2xl border border-[#334155]">
+              <div className="flex justify-between items-center mb-8">
+                <h3 className="text-2xl font-black">{isUpdateMode ? 'Update Quiz 📝' : 'Create New Quiz 📝'}</h3>
+                <button onClick={() => setShowQuizModal(false)} className="w-10 h-10 rounded-xl bg-[#0f172a] flex items-center justify-center hover:bg-red-900/30 hover:text-red-500 transition-colors">✕</button>
+              </div>
+              
+              <form onSubmit={handleQuizSubmit} className="space-y-4">
+                <input 
+                  type="text" 
+                  placeholder="Quiz Title" 
+                  value={newQuiz.title}
+                  onChange={e => setNewQuiz({...newQuiz, title: e.target.value})}
+                  className="w-full p-4 rounded-xl bg-[#0f172a] border border-[#334155] text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                  required
+                />
+                
+                <select 
+                  value={newQuiz.courseId}
+                  onChange={e => setNewQuiz({...newQuiz, courseId: e.target.value})}
+                  className="w-full p-4 rounded-xl bg-[#0f172a] border border-[#334155] text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                  required
+                >
+                  <option value="">Select Course</option>
+                  {courses.map(c => <option key={c.id || c._id} value={c.id || c._id}>{c.title}</option>)}
+                </select>
+                
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <div className="space-y-2">
+                    <label className="text-[10px] font-bold text-gray-500 uppercase tracking-widest ml-1">Source</label>
+                    <select 
+                      value={newQuiz.source}
+                      onChange={e => setNewQuiz({...newQuiz, source: e.target.value})}
+                      className="w-full p-4 rounded-xl bg-[#0f172a] border border-[#334155] text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                    >
+                      <option value="Manual">Manual</option>
+                      <option value="Dataset">Dataset</option>
+                      <option value="Mixed">Mixed</option>
+                    </select>
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <label className="text-[10px] font-bold text-gray-500 uppercase tracking-widest ml-1">Duration (minutes)</label>
+                    <input 
+                      type="number" 
+                      placeholder="30"
+                      value={newQuiz.duration}
+                      onChange={e => setNewQuiz({...newQuiz, duration: parseInt(e.target.value)})}
+                      className="w-full p-4 rounded-xl bg-[#0f172a] border border-[#334155] text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                      min="1"
+                    />
+                  </div>
+                  
+                  {(newQuiz.source === 'Dataset' || newQuiz.source === 'Mixed') && (
+                    <div className="space-y-2">
+                      <label className="text-[10px] font-bold text-gray-500 uppercase tracking-widest ml-1">Dataset Questions</label>
+                      <input 
+                        type="number" 
+                        placeholder="10"
+                        value={newQuiz.datasetQuestionCount}
+                        onChange={e => setNewQuiz({...newQuiz, datasetQuestionCount: parseInt(e.target.value)})}
+                        className="w-full p-4 rounded-xl bg-[#0f172a] border border-[#334155] text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                        min="1"
+                      />
+                    </div>
+                  )}
+                </div>
+                
+                {(newQuiz.source === 'Manual' || newQuiz.source === 'Mixed') && (
+                  <div className="space-y-4">
+                    <div className="flex justify-between items-center">
+                      <h4 className="text-sm font-bold uppercase tracking-widest text-gray-500">Manual Questions</h4>
+                      <button 
+                        type="button"
+                        onClick={() => setNewQuiz({
+                          ...newQuiz, 
+                          questions: [...newQuiz.questions, { questionText: '', options: ['', '', '', ''], correctAnswer: [] }]
+                        })}
+                        className="px-4 py-2 rounded-lg bg-indigo-600 text-white text-sm font-bold hover:bg-indigo-700 transition-all"
+                      >
+                        + Add Question
+                      </button>
+                    </div>
+                    
+                    {newQuiz.questions.map((q, qIndex) => (
+                      <div key={qIndex} className="p-6 rounded-2xl bg-[#0f172a]/50 border border-[#334155] space-y-4">
+                        <div className="flex justify-between items-start">
+                          <label className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Question {qIndex + 1}</label>
+                          <button 
+                            type="button"
+                            onClick={() => {
+                              const newQuestions = [...newQuiz.questions];
+                              newQuestions.splice(qIndex, 1);
+                              setNewQuiz({...newQuiz, questions: newQuestions});
+                            }}
+                            className="p-2 rounded-lg bg-red-500/20 text-red-400 hover:bg-red-500 hover:text-white transition-all"
+                          >
+                            🗑️
+                          </button>
+                        </div>
+                        
+                        <input 
+                          type="text" 
+                          placeholder="Question text"
+                          value={q.questionText}
+                          onChange={e => {
+                            const newQuestions = [...newQuiz.questions];
+                            newQuestions[qIndex] = {...q, questionText: e.target.value};
+                            setNewQuiz({...newQuiz, questions: newQuestions});
+                          }}
+                          className="w-full p-3 rounded-xl bg-[#1e293b] border border-[#334155] text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                        />
+                        
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                          {q.options.map((opt, oIndex) => (
+                            <div key={oIndex} className="flex items-center gap-3">
+                              <input 
+                                type="checkbox"
+                                checked={q.correctAnswer.includes(oIndex)}
+                                onChange={e => {
+                                  const newQuestions = [...newQuiz.questions];
+                                  const currentAnswers = [...newQuestions[qIndex].correctAnswer];
+                                  if (currentAnswers.includes(oIndex)) {
+                                    newQuestions[qIndex].correctAnswer = currentAnswers.filter(i => i !== oIndex);
+                                  } else {
+                                    newQuestions[qIndex].correctAnswer = [...currentAnswers, oIndex];
+                                  }
+                                  setNewQuiz({...newQuiz, questions: newQuestions});
+                                }}
+                                className="w-5 h-5 rounded border-[#334155] text-indigo-600 focus:ring-indigo-500 bg-transparent"
+                              />
+                              <input 
+                                type="text" 
+                                placeholder={`Option ${oIndex + 1}`}
+                                value={opt}
+                                onChange={e => {
+                                  const newQuestions = [...newQuiz.questions];
+                                  const newOptions = [...newQuestions[qIndex].options];
+                                  newOptions[oIndex] = e.target.value;
+                                  newQuestions[qIndex].options = newOptions;
+                                  setNewQuiz({...newQuiz, questions: newQuestions});
+                                }}
+                                className="flex-1 p-3 rounded-xl bg-[#1e293b] border border-[#334155] text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                              />
+                              <span className="text-xs text-gray-500 font-bold">
+                                {q.correctAnswer.includes(oIndex) ? '✓ Correct' : ''}
+                              </span>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+                
+                <div className="flex gap-3">
+                  <button type="submit" className="flex-1 py-4 rounded-xl bg-indigo-600 text-white font-bold hover:bg-indigo-700 transition-all">
+                    {isUpdateMode ? 'Update Quiz' : 'Create Quiz'}
+                  </button>
+                  <button type="button" onClick={() => setShowQuizModal(false)} className="px-8 py-4 rounded-xl bg-[#0f172a] text-gray-400 font-bold hover:bg-red-900/20 hover:text-red-500 transition-all">
                     Cancel
                   </button>
                 </div>
