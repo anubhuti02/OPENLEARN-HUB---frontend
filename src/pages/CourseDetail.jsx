@@ -3,7 +3,7 @@ import { useParams, useNavigate, Link } from "react-router-dom";
 import { useAuth } from "../auth/AuthContext";
 import DashboardLayout from "../components/DashboardLayout";
 
-const BACKEND_URL = "http://localhost:5001";
+const BACKEND_URL = process.env.REACT_APP_API_URL;
 
 export default function CourseDetail() {
   const { id } = useParams();
