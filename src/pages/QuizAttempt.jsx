@@ -16,6 +16,7 @@ export default function QuizAttempt() {
   const [startTime] = useState(Date.now());
   const [timeLeft, setTimeLeft] = useState(null);
   const [isAutoSubmitting, setIsAutoSubmitting] = useState(false);
+  const [showReview, setShowReview] = useState(false);
 
   useEffect(() => {
     fetch(`${BACKEND_URL}/api/quizzes/detail/${id}`, {
@@ -270,12 +271,91 @@ export default function QuizAttempt() {
             </div>
           </div>
 
-          <button 
-            className="max-w-4xl mx-auto block w-full py-5 rounded-2xl bg-indigo-600 text-white font-black text-xl hover:bg-indigo-700 transition-all shadow-lg shadow-indigo-500/25 active:scale-95" 
-            onClick={() => navigate('/student')}
-          >
-            Back to Dashboard
-          </button>
+          <div className="max-w-4xl mx-auto flex flex-col gap-4 mb-8">
+            <button 
+              className="w-full py-5 rounded-2xl bg-emerald-600 text-white font-black text-xl hover:bg-emerald-700 transition-all shadow-lg shadow-emerald-500/25 active:scale-95" 
+              onClick={() => setShowReview(!showReview)}
+            >
+              {showReview ? 'Hide Answers' : 'Review Answers'}
+            </button>
+            
+            <button 
+              className="w-full py-5 rounded-2xl bg-indigo-600 text-white font-black text-xl hover:bg-indigo-700 transition-all shadow-lg shadow-indigo-500/25 active:scale-95" 
+              onClick={() => navigate('/student')}
+            >
+              Back to Dashboard
+            </button>
+          </div>
+
+          {/* Answer Review Section */}
+          {showReview && result.quizQuestions && (
+            <div className="max-w-4xl mx-auto space-y-6 mb-8">
+              <h2 className="text-3xl font-black text-center mb-8">Answer Review</h2>
+              
+              {result.quizQuestions.map((question, qIndex) => {
+                const answerData = result.answers[qIndex];
+                return (
+                  <div 
+                    key={qIndex} 
+                    className="p-8 rounded-3xl bg-[#1e293b] border border-[#334155] shadow-xl"
+                  >
+                    <div className="flex justify-between items-start mb-6">
+                      <h4 className="text-xs font-black uppercase tracking-widest text-indigo-400">Question {qIndex + 1}</h4>
+                      <span className={`px-4 py-1.5 rounded-full text-xs font-black uppercase tracking-wider ${
+                        answerData.isCorrect 
+                          ? 'bg-emerald-500/20 text-emerald-400' 
+                          : 'bg-red-500/20 text-red-400'
+                      }`}>
+                        {answerData.isCorrect ? '✓ Correct' : '✗ Wrong'}
+                      </span>
+                    </div>
+                    
+                    <p className="text-xl font-medium text-white mb-6">{question.questionText}</p>
+                    
+                    <div className="grid grid-cols-1 gap-3">
+                      {question.options.map((opt, oIndex) => {
+                        const isSelected = answerData.selectedOptions.includes(oIndex);
+                        const isCorrect = answerData.correctAnswers.includes(oIndex);
+                        
+                        let bgClass = 'bg-[#0f172a]/50 border-[#334155]';
+                        let textClass = 'text-gray-400';
+                        
+                        if (isCorrect) {
+                          bgClass = 'bg-emerald-500/10 border-emerald-500/30';
+                          textClass = 'text-emerald-400 font-bold';
+                        }
+                        
+                        if (isSelected && !isCorrect) {
+                          bgClass = 'bg-red-500/10 border-red-500/30';
+                          textClass = 'text-red-400 font-bold';
+                        }
+                        
+                        return (
+                          <div 
+                            key={oIndex} 
+                            className={`flex items-center gap-4 p-5 rounded-2xl border-2 ${bgClass}`}
+                          >
+                            <span className="text-2xl">
+                              {isCorrect ? '✅' : (isSelected ? '❌' : '⭕')}
+                            </span>
+                            <div className="flex-1">
+                              <span className={textClass}>{opt}</span>
+                              {isSelected && !isCorrect && (
+                                <p className="text-xs text-red-400 mt-1 font-bold">Your answer</p>
+                              )}
+                              {isCorrect && (
+                                <p className="text-xs text-emerald-400 mt-1 font-bold">Correct answer</p>
+                              )}
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          )}
         </div>
       </DashboardLayout>
     );
