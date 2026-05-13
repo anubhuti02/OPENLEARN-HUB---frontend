@@ -1,0 +1,12 @@
+.hero{display:grid;grid-template-columns:1.2fr 1fr;gap:32px;align-items:center;padding:60px 24px;background:linear-gradient(135deg,#0a2540 0%,#203a59 100%);color:#fff}
+.hero__content h1{font-size:52px;line-height:1.1;margin:0 0 12px}
+.hero__content p{opacity:.9;margin:0 0 20px}
+.hero__cta .btn{font-size:16px;padding:12px 18px}
+.hero__art{height:280px;border-radius:16px;background:radial-gradient(600px circle at 0% 0%,#6c5ce7 20%,transparent 70%),radial-gradient(600px circle at 100% 100%,#00d4ff 20%,transparent 70%),#10243e;box-shadow:0 15px 30px rgba(0,0,0,.2)}
+.badge{display:inline-block;margin-top:10px;background:#eef6ff;color:#0a2540;padding:6px 10px;border-radius:8px}
+.features,.roles{padding:40px 24px}
+.features h2,.roles h2{color:#0a2540;margin-bottom:16px}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px}
+.card{border:1px solid #eee;border-radius:14px;padding:18px;background:#fff}
+.footer{padding:24px;background:#f8fafc;color:#334155;display:flex;justify-content:space-between}
+@media(max-width:860px){.hero{grid-template-columns:1fr}.hero__art{order:-1;height:200px}}
